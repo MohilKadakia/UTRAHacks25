@@ -14,16 +14,6 @@ export function HapticTab(props: BottomTabBarButtonProps) {
         }
         props.onPressIn?.(ev);
       }}
-
-      style={styles.button}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    paddingVertical: 10,
-    alignItems: 'center',
-    backgroundColor: '#ba4535',
-  }
-});
