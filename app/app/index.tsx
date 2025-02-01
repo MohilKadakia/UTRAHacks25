@@ -1,56 +1,46 @@
-import { Image, StyleSheet, Platform, PermissionsAndroid } from 'react-native';
+import { Image, StyleSheet, TextInput } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-import * as Device from "expo-device";
 import { useEffect, useState } from 'react';
 import { HapticTab } from '@/components/HapticTab';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+
 export default function HomeScreen() {
 
-  const requestAndroid31Permissions = async () => {
-    if(Platform.OS == 'android') {
-      const bluetoothScanPermission = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-        {
-          title: "Location Permission",
-          message: "Bluetooth Low Energy requires Location",
-          buttonPositive: "OK",
-        }
-      );
-      const bluetoothConnectPermission = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-        {
-          title: "Location Permission",
-          message: "Bluetooth Low Energy requires Location",
-          buttonPositive: "OK",
-        }
-      );
-      const fineLocationPermission = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: "Location Permission",
-          message: "Bluetooth Low Energy requires Location",
-          buttonPositive: "OK",
-        }
-      );
+  const [number, setNumber] = useState('');
+
+
+  // Store IP Address so it doesn't have to be typed each time
+  const storeData = async (value : string) => {
+    try {
+      await AsyncStorage.setItem('ipaddr', value);
+      router.push('/exercise')
+    } catch (e) {
+      return false;
     }
+  };
 
-    // return (
-    //   bluetoothScanPermission === "granted" &&
-    //   bluetoothConnectPermission === "granted" &&
-    //   fineLocationPermission === "granted"
-    // );
-  }
-  
-  const [test, setTest] = useState(0);
-
+  // Get IP Address from storage if exists
   useEffect(() => {
-  },[]);
+    const getData = async () => {
+      try {
+        const value = await AsyncStorage.getItem('ipaddr');
+        if (value !== null) {
+          setNumber(value);
+        }
+      } catch (e) {
+        // error reading value
+      }
+    };
 
-    
+    getData();
+  }, [])
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -61,10 +51,19 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to!</ThemedText>
+        <ThemedText type="title">TEST PAGE</ThemedText>
       </ThemedView>
-      <ThemedText>{Platform.OS}</ThemedText>
-      <HapticTab onPress={() => {requestAndroid31Permissions()}}><ThemedText>Click</ThemedText></HapticTab>
+      <TextInput
+        style={styles.input}
+        onChangeText={setNumber}
+        value={number}
+        placeholder="IP Address"
+        keyboardType="numeric"
+      />
+      <HapticTab 
+        onPress={() => {storeData(number)}}
+        style={styles.confirmButton}
+        ><ThemedText>Confirm: {number}</ThemedText></HapticTab>
     </ParallaxScrollView>
   );
 }
@@ -86,4 +85,20 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
+  input: {
+    height: 40,
+    marginVertical: 12,
+    padding: 10,
+    color: "#000000",
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    maxWidth: 480,
+  },
+  confirmButton: {
+    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: '#457f35',
+    borderRadius: 12,
+    maxWidth: 480,
+  }
 });
