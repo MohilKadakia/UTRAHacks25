@@ -38,7 +38,7 @@ func main() {
 	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file, relying on environment variables")
 	}
 
 	// MongoDB connection URI (get these values from .env file)
