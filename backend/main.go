@@ -126,9 +126,15 @@ func main() {
 	http.HandleFunc("/getWorkouts", getWorkoutsHandler)
 	http.HandleFunc("/getWorkout", getWorkoutHandler)
 
+	// Get port from environment variable or default to 4000
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "4000"
+	}
+
 	// Start HTTP server
-	fmt.Println("Server starting on port 4000...")
-	log.Fatal(http.ListenAndServe(":4000", nil))
+	fmt.Printf("Server starting on port %s...\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 func addWorkoutHandler(w http.ResponseWriter, r *http.Request) {
