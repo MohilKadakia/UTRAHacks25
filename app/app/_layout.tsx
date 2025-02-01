@@ -37,6 +37,18 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="report"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="exercise"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="+not-found" 
           options={{
             headerShown: false,
