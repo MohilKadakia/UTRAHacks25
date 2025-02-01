@@ -11,25 +11,25 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/joho/godotenv"
 )
 
 // Point represents a single coordinate point in the workout
 type Point struct {
-	X                 float64 `json:"x" bson:"x"`
-	Y                 float64 `json:"y" bson:"y"`
+	X                   float64 `json:"x" bson:"x"`
+	Y                   float64 `json:"y" bson:"y"`
 	ElapsedMilliseconds uint    `json:"elapsed" bson:"elapsed"`
 }
 
 // Workout represents the complete workout data
 type Workout struct {
 	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Points    []Point           `json:"points" bson:"points"`
-	Timestamp time.Time         `json:"timestamp" bson:"timestamp"`
+	Points    []Point            `json:"points" bson:"points"`
+	Timestamp time.Time          `json:"timestamp" bson:"timestamp"`
 }
 
 var workoutsCollection *mongo.Collection
@@ -67,7 +67,7 @@ func main() {
 
 	// Get database and collection
 	database := client.Database("main")
-	
+
 	// Create collection with schema validation
 	jsonSchema := bson.M{
 		"bsonType": "object",
@@ -81,24 +81,24 @@ func main() {
 					"required": []string{"x", "y", "elapsed"},
 					"properties": bson.M{
 						"x": bson.M{
-							"bsonType": "double",
+							"bsonType":    "double",
 							"description": "x coordinate - must be a double/float",
 						},
 						"y": bson.M{
-							"bsonType": "double",
+							"bsonType":    "double",
 							"description": "y coordinate - must be a double/float",
 						},
 						"elapsed": bson.M{
-							"bsonType": "long",
-							"minimum": 0,
-							"multipleOf": 1,
+							"bsonType":    "long",
+							"minimum":     0,
+							"multipleOf":  1,
 							"description": "elapsed time in milliseconds - must be a non-negative integer",
 						},
 					},
 				},
 			},
 			"timestamp": bson.M{
-				"bsonType": "date",
+				"bsonType":    "date",
 				"description": "timestamp of the workout",
 			},
 		},
@@ -136,6 +136,8 @@ func addWorkoutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+
+	enableCors(&w)
 
 	var points []Point
 	if err := json.NewDecoder(r.Body).Decode(&points); err != nil {
@@ -178,6 +180,8 @@ func getWorkoutsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	enableCors(&w)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -203,6 +207,8 @@ func getWorkoutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+
+	enableCors(&w)
 
 	id := r.URL.Query().Get("id")
 	if id == "" {
@@ -232,4 +238,10 @@ func getWorkoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(workout)
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
