@@ -8,38 +8,50 @@ import { useEffect, useState } from 'react';
 import { HapticTab } from '@/components/HapticTab';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
+import React from 'react';
 
 export default function HomeScreen() {
 
-  const [number, setNumber] = useState('');
+  const router = useRouter();
+  
+    useEffect(() => {
+      // Redirect to home page after 2 seconds
+      const timer = setTimeout(() => {
+        router.push('/');
+      }, 1000);
+  
+      // Clean up the timeout if the component unmounts
+      return () => clearTimeout(timer);
+    }, [router]);
 
+  // const [number, setNumber] = useState('');
 
   // Store IP Address so it doesn't have to be typed each time
-  const storeData = async (value : string) => {
-    try {
-      await AsyncStorage.setItem('ipaddr', value);
-      router.push('/history')
-    } catch (e) {
-      return false;
-    }
-  };
+  // const storeData = async (value : string) => {
+  //   try {
+  //     await AsyncStorage.setItem('ipaddr', value);
+  //     router.push('/history')
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // };
 
   // Get IP Address from storage if exists
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const value = await AsyncStorage.getItem('ipaddr');
-        if (value !== null) {
-          setNumber(value);
-        }
-      } catch (e) {
-        // error reading value
-      }
-    };
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     try {
+  //       const value = await AsyncStorage.getItem('ipaddr');
+  //       if (value !== null) {
+  //         setNumber(value);
+  //       }
+  //     } catch (e) {
+  //       // error reading value
+  //     }
+  //   };
 
-    getData();
-  }, [])
+  //   getData();
+  // }, [])
 
   return (
     <ParallaxScrollView
@@ -48,19 +60,19 @@ export default function HomeScreen() {
         <></>
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">TEST PAGE</ThemedText>
+        <ThemedText type="title">Home Page</ThemedText>
       </ThemedView>
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         onChangeText={setNumber}
         value={number}
         placeholder="IP Address"
         keyboardType="numeric"
-      />
+      /> */}
       <HapticTab 
-        onPress={() => {storeData(number)}}
+        onPress={() => {router.push('/history')}}
         style={styles.confirmButton}
-        ><ThemedText>Confirm: {number}</ThemedText></HapticTab>
+        ><ThemedText>Login</ThemedText></HapticTab>
     </ParallaxScrollView>
   );
 }
