@@ -27,6 +27,7 @@ type Point struct {
 // Workout represents the complete workout data
 type Workout struct {
 	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	Type      string             `json:"type" bson:"type"`
 	Points    []Point            `json:"points" bson:"points"`
 	Timestamp time.Time          `json:"timestamp" bson:"timestamp"`
 }
@@ -72,7 +73,7 @@ func main() {
 	// Create collection with schema validation
 	jsonSchema := bson.M{
 		"bsonType": "object",
-		"required": []string{"points", "timestamp"},
+		"required": []string{"points", "timestamp", "type"},
 		"properties": bson.M{
 			"points": bson.M{
 				"bsonType": "array",
@@ -91,6 +92,10 @@ func main() {
 						},
 					},
 				},
+			},
+			"type": bson.M{
+				"bsonType":    "string",
+				"description": "type of the workout",
 			},
 			"timestamp": bson.M{
 				"bsonType":    "date",
@@ -152,21 +157,31 @@ func addWorkoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var points []Point
-	if err := json.NewDecoder(r.Body).Decode(&points); err != nil {
-		http.Error(w, "Invalid request body: expected array of points", http.StatusBadRequest)
+	// Parse request body
+	var workoutData struct {
+		Type   string  `json:"type"`
+		Points []Point `json:"points"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&workoutData); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	// Validate that we received at least one point
-	if len(points) == 0 {
+	// Validate required fields
+	if workoutData.Type == "" {
+		http.Error(w, "Workout type is required", http.StatusBadRequest)
+		return
+	}
+
+	if len(workoutData.Points) == 0 {
 		http.Error(w, "Workout must contain at least one point", http.StatusBadRequest)
 		return
 	}
 
 	// Create workout document
 	workout := Workout{
-		Points:    points,
+		Type:      workoutData.Type,
+		Points:    workoutData.Points,
 		Timestamp: time.Now(),
 	}
 
