@@ -20,9 +20,8 @@ import (
 
 // Point represents a single coordinate point in the workout
 type Point struct {
-	X                   float64 `json:"x" bson:"x"`
-	Y                   float64 `json:"y" bson:"y"`
-	ElapsedMilliseconds uint    `json:"elapsed" bson:"elapsed"`
+	X float64 `json:"x" bson:"x"`
+	Y float64 `json:"y" bson:"y"`
 }
 
 // Workout represents the complete workout data
@@ -80,7 +79,7 @@ func main() {
 				"minItems": 1,
 				"items": bson.M{
 					"bsonType": "object",
-					"required": []string{"x", "y", "elapsed"},
+					"required": []string{"x", "y"},
 					"properties": bson.M{
 						"x": bson.M{
 							"bsonType":    "double",
@@ -89,12 +88,6 @@ func main() {
 						"y": bson.M{
 							"bsonType":    "double",
 							"description": "y coordinate - must be a double/float",
-						},
-						"elapsed": bson.M{
-							"bsonType":    "long",
-							"minimum":     0,
-							"multipleOf":  1,
-							"description": "elapsed time in milliseconds - must be a non-negative integer",
 						},
 					},
 				},
