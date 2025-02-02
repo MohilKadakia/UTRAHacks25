@@ -7,7 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ExerciseCard } from '@/components/ExerciseHistoryCard';
 import { useEffect, useState } from 'react';
 import React from 'react';
-import { FlatList } from 'react-native-gesture-handler';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { HapticTab } from '@/components/HapticTab';
 
 interface Points {
@@ -23,6 +23,7 @@ interface ExerciseData {
 }
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme();
   const [data, setData] = useState<ExerciseData[]>();
   const [loading, setLoading] = useState(true);
 
@@ -45,10 +46,7 @@ export default function HomeScreen() {
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
+        <></>
       }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Exercises</ThemedText>
@@ -63,7 +61,7 @@ export default function HomeScreen() {
             id={item._id}
             image={
               <Image
-                source={require('@/assets/images/partial-react-logo.png')}
+                source={require(`@/assets/images/exercise/exercise-icon-dark.png`)}
                 style={styles.exercizeIcon}
               />
             }
