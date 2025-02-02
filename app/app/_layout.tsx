@@ -43,7 +43,13 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="exercise"
+          name="history"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="history/[report]"
           options={{
             headerShown: false,
           }}
