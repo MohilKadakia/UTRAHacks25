@@ -1,4 +1,4 @@
-import { Image, StyleSheet, TextInput } from 'react-native';
+import { Image, StyleSheet, Platform, PermissionsAndroid, TextInput } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -9,37 +9,11 @@ import { HapticTab } from '@/components/HapticTab';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import Graph from '@/components/Graph';
 
 export default function HomeScreen() {
 
   const [number, setNumber] = useState('');
-
-
-  // Store IP Address so it doesn't have to be typed each time
-  const storeData = async (value : string) => {
-    try {
-      await AsyncStorage.setItem('ipaddr', value);
-      router.push('/history')
-    } catch (e) {
-      return false;
-    }
-  };
-
-  // Get IP Address from storage if exists
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const value = await AsyncStorage.getItem('ipaddr');
-        if (value !== null) {
-          setNumber(value);
-        }
-      } catch (e) {
-        // error reading value
-      }
-    };
-
-    getData();
-  }, [])
 
   return (
     <ParallaxScrollView
@@ -50,18 +24,14 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
+
+      {/* <Graph></Graph> */}
+      
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">TEST PAGE</ThemedText>
       </ThemedView>
-      <TextInput
-        style={styles.input}
-        onChangeText={setNumber}
-        value={number}
-        placeholder="IP Address"
-        keyboardType="numeric"
-      />
       <HapticTab 
-        onPress={() => {storeData(number)}}
+        onPress={() => {}}
         style={styles.confirmButton}
         ><ThemedText>Confirm: {number}</ThemedText></HapticTab>
     </ParallaxScrollView>
