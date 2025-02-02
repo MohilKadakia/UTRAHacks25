@@ -15,15 +15,15 @@ export default function HomeScreen() {
 
   const router = useRouter();
   
-    useEffect(() => {
-      // Redirect to home page after 2 seconds
-      const timer = setTimeout(() => {
-        router.push('/');
-      }, 1000);
-  
-      // Clean up the timeout if the component unmounts
-      return () => clearTimeout(timer);
-    }, [router]);
+  useEffect(() => {
+    // Redirect to home page after 2 seconds
+    const timer = setTimeout(() => {
+      router.push('/history');
+    }, 1000);
+
+    // Clean up the timeout if the component unmounts
+    return () => clearTimeout(timer);
+  }, [router]);
 
   // const [number, setNumber] = useState('');
 

@@ -1,8 +1,6 @@
 import { Dimensions, View } from 'react-native';
 import { ThemedText } from './ThemedText';
-import { LineChart, BarChart } from "react-native-gifted-charts";
-// type Props = Omit<ComponentProps<typeof >, 'href'> & { href: string };
-  
+import { LineChart, BarChart } from "react-native-gifted-charts";  
 
 export default function Graph() {
   const data1 = [
@@ -117,7 +115,7 @@ export default function Graph() {
 
           pointerLabelHeight: 120,
 
-          pointerLabelComponent: (items) => {
+          pointerLabelComponent: () => {
 
             return (
 
