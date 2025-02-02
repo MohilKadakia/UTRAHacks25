@@ -30,12 +30,31 @@ export default function HomeScreen() {
   const [data, setData] = useState<ExerciseData>();
   const [loading, setLoading] = useState(true);
 
+  const [dataX, setDataX] = useState<{value: number}[]>([])   
+  const [dataY, setDataY]= useState<{value: number}[]>([])
+  const [maxY, setMaxY]= useState(0);
+
   useEffect(() => {
     const getTest = async () => {
       try {
         const response = await fetch(`https://utrahacks25.onrender.com/getWorkout?id=${report}`);
         const json = await response.json();
         setData(json);
+        let _maxY = 0;
+        json.points.map((point : Points) => {
+          if(Math.abs(point.y - json.points[0].y) > _maxY) {
+            _maxY = Math.abs(point.y - json.points[0].y)
+          }
+
+          dataX.push({
+            value: point.x - json.points[0].x
+          })
+          dataY.push({
+            value: Math.abs(point.y - json.points[0].y)
+          })
+          console.log(dataX, dataY)
+          setMaxY(_maxY);
+        })
       } catch (error) {
       console.error(error);
       } finally {
@@ -57,16 +76,20 @@ export default function HomeScreen() {
           :
           <>
             <ThemedText type="title">Exercise Report</ThemedText>
-            <ThemedText type="subtitle">Timestamp: {Date(data?.timestamp)}</ThemedText>
+            {/* <ThemedText type="subtitle">Timestamp: {Date(data?.timestamp)}</ThemedText> */}
+            <HapticTab 
+              onPress={() => {router.push("/history")}}
+              style={styles.backButton}
+              ><ThemedText>Go back</ThemedText></HapticTab>
+            
+            <Graph 
+              dataX={dataX}
+              dataY={dataY}    
+              maxY={maxY}
+            />
           </>
         }
       </ThemedView>
-      <HapticTab 
-        onPress={() => {router.push("/history/")}}
-        style={styles.backButton}
-        ><ThemedText>Go back</ThemedText></HapticTab>
-      
-      <Graph></Graph>
     </ParallaxScrollView>
   );
 }
