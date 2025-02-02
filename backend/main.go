@@ -50,7 +50,8 @@ func main() {
 	uri := fmt.Sprintf("mongodb+srv://%s:%s@%s/myFirstDatabase?retryWrites=true&w=majority", username, password, clusterURL)
 
 	// Create a new MongoDB client
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	clientOpts := options.Client().ApplyURI(uri)
+	client, err := mongo.Connect(context.Background(), clientOpts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +60,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = client.Connect(ctx)
+	// Ping the database to verify connection
+	err = client.Ping(ctx, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -137,6 +139,12 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
+func validateToken(r *http.Request) bool {
+	token := r.Header.Get("Authorization")
+	expectedToken := os.Getenv("REQ_TOKEN")
+	return expectedToken != "" && token == expectedToken
+}
+
 func addWorkoutHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -144,6 +152,12 @@ func addWorkoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	enableCors(&w)
+
+	// Check for valid token
+	if !validateToken(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	var points []Point
 	if err := json.NewDecoder(r.Body).Decode(&points); err != nil {
