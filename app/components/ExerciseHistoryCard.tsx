@@ -34,7 +34,7 @@ export function ExerciseCard({
         activeOpacity={0.8}>
         {image}
         
-        <ThemedText type="title">{title}</ThemedText>
+        <ThemedText type="default">{title}</ThemedText>
       </TouchableOpacity>
       
     </ThemedView>
